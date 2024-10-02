@@ -1,7 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
+const dotenv = require('dotenv'); // นำเข้า dotenv
 const app = express();
+
+// โหลดค่าจากไฟล์ .env
+dotenv.config();
 
 // ตั้งค่าให้ Express ใช้ EJS
 app.set('view engine', 'ejs');
@@ -11,10 +15,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // ตั้งค่าการเชื่อมต่อฐานข้อมูล
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'db_nodejs' // เปลี่ยนตามฐานข้อมูลของคุณ
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    port: process.env.DB_PORT // ใช้พอร์ตจาก .env
 });
 
 db.connect((err) => {
@@ -22,9 +27,10 @@ db.connect((err) => {
     console.log('Connected to MySQL database');
 });
 
-// กำหนด Port สำหรับเซิร์ฟเวอร์
-app.listen(3000, () => {
-    console.log('Server started on port 3000');
+// กำหนด Port สำหรับเซิร์ฟเวอร์จาก .env
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
 });
 
 // เส้นทางหลัก (READ) เพื่อแสดงรายการทั้งหมด
